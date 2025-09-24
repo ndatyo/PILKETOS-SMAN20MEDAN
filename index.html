@@ -5,79 +5,295 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Voting OSIS</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .card-shadow { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .animate-fade-in { animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Background animasi */
+        .animated-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .animated-bg::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: rotate 30s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Card styles */
+        .card-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+        
+        .card-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15), 0 15px 15px -5px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Animations */
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        /* Button styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.5s ease;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        /* Glass effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Floating animation */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        /* Progress bar animation */
+        .progress-bar {
+            transition: width 1.5s ease-in-out;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Candidate card hover effect */
+        .candidate-card {
+            transition: all 0.3s ease;
+        }
+        
+        .candidate-card:hover {
+            transform: translateY(-8px);
+        }
+        
+        /* Voting button effect */
+        .vote-btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .vote-btn::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .vote-btn:hover::after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+        
+        /* Notification animation */
+        .notification {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Logo styling */
+        .school-logo {
+            animation: logoFloat 4s ease-in-out infinite;
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.2));
+        }
+        
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="animated-bg min-h-screen">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse-slow"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse-slow" style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse-slow" style="animation-delay: 4s;"></div>
+    </div>
+
     <!-- Header -->
-    <header class="bg-white/10 backdrop-blur-md border-b border-white/20">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <header class="glass sticky top-0 z-40 border-b border-white/20">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center relative z-10">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                    <span class="text-purple-600 font-bold text-lg">📊</span>
-                </div>
-                <h1 class="text-white text-xl font-bold">E-Voting OSIS</h1>
+                <img src="https://z-cdn-media.chatglm.cn/files/9dc31110-df90-47fa-a0d0-ad68c71980e0_logo-sekolah.png?auth_key=1790264408-30aa5e18b0434ad89b1e65954f66c69d-0-eb89bff8ae3eb018d606234bb320a228" alt="Logo SMA Negeri 20" class="w-12 h-12 rounded-full">
+                <h1 class="text-white text-2xl font-bold">E-Voting OSIS</h1>
             </div>
-            <button id="adminLoginBtn" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-300 backdrop-blur-sm">
-                Login Admin
+            <button id="adminLoginBtn" class="glass text-white px-6 py-2 rounded-full transition-all duration-300 hover:bg-white/20 flex items-center space-x-2">
+                <i class="fas fa-user-shield"></i>
+                <span>Login Admin</span>
             </button>
         </div>
     </header>
 
     <!-- Main Container -->
-    <div class="container mx-auto px-6 py-8">
+    <div class="container mx-auto px-6 py-8 relative z-10">
         <!-- Student Login Section -->
-        <div id="studentLogin" class="max-w-md mx-auto bg-white rounded-2xl card-shadow p-8 animate-fade-in">
+        <div id="studentLogin" class="max-w-md mx-auto bg-white/90 backdrop-blur-sm rounded-2xl card-shadow p-8 animate-fade-in">
             <div class="text-center mb-8">
-                <div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <span class="text-white text-3xl">🗳️</span>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">Pemilihan Ketua OSIS</h2>
+                <img src="https://z-cdn-media.chatglm.cn/files/9dc31110-df90-47fa-a0d0-ad68c71980e0_logo-sekolah.png?auth_key=1790264408-30aa5e18b0434ad89b1e65954f66c69d-0-eb89bff8ae3eb018d606234bb320a228" alt="Logo SMA Negeri 20" class="w-32 h-32 mx-auto mb-6 school-logo">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Pemilihan Ketua OSIS</h2>
                 <p class="text-gray-600">Masukkan NISN untuk memulai voting</p>
             </div>
             <form id="studentLoginForm" class="space-y-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">NISN</label>
-                    <input type="text" id="studentNisn" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Masukkan NISN Anda" required>
+                    <div class="relative">
+                        <input type="text" id="studentNisn" class="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Masukkan NISN Anda" required>
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fas fa-id-card text-gray-400"></i>
+                        </div>
+                    </div>
                 </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-blue-600 transition-all duration-300">
-                    Masuk Voting
+                <button type="submit" class="w-full btn-primary text-white py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-blue-600 transition-all duration-300 flex items-center justify-center space-x-2">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Masuk Voting</span>
                 </button>
             </form>
             <div class="mt-6 text-center">
-                <button id="viewResultsBtn" class="text-purple-600 hover:text-purple-800 font-medium">
-                    Lihat Hasil Pemilihan →
+                <button id="viewResultsBtn" class="text-purple-600 hover:text-purple-800 font-medium flex items-center justify-center space-x-1 mx-auto">
+                    <span>Lihat Hasil Pemilihan</span>
+                    <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
         </div>
 
         <!-- Admin Login Modal -->
         <div id="adminModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50">
-            <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 card-shadow">
+            <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-8 max-w-md w-full mx-4 card-shadow">
                 <div class="text-center mb-6">
+                    <img src="https://z-cdn-media.chatglm.cn/files/9dc31110-df90-47fa-a0d0-ad68c71980e0_logo-sekolah.png?auth_key=1790264408-30aa5e18b0434ad89b1e65954f66c69d-0-eb89bff8ae3eb018d606234bb320a228" alt="Logo SMA Negeri 20" class="w-20 h-20 mx-auto mb-4">
                     <h3 class="text-2xl font-bold text-gray-800">Login Admin</h3>
                 </div>
                 <form id="adminLoginForm" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
-                        <input type="text" id="adminUsername" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="admin" required>
+                        <div class="relative">
+                            <input type="text" id="adminUsername" class="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="admin" required>
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                        <input type="password" id="adminPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="admin123" required>
+                        <div class="relative">
+                            <input type="password" id="adminPassword" class="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="admin123" required>
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                        </div>
                     </div>
                     <div class="flex space-x-3">
-                        <button type="submit" class="flex-1 bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
-                            Login
+                        <button type="submit" class="flex-1 btn-primary text-white py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-blue-600 transition-colors flex items-center justify-center space-x-2">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Login</span>
                         </button>
-                        <button type="button" id="closeAdminModal" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
-                            Batal
+                        <button type="button" id="closeAdminModal" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-400 transition-colors flex items-center justify-center space-x-2">
+                            <i class="fas fa-times"></i>
+                            <span>Batal</span>
                         </button>
                     </div>
                 </form>
@@ -86,31 +302,52 @@
 
         <!-- Admin Dashboard -->
         <div id="adminDashboard" class="hidden animate-fade-in">
-            <div class="bg-white rounded-2xl card-shadow p-8 mb-8">
+            <div class="bg-white/90 backdrop-blur-sm rounded-2xl card-shadow p-8 mb-8">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Dashboard Admin</h2>
-                    <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
-                        Logout
+                    <div class="flex items-center space-x-3">
+                        <img src="https://z-cdn-media.chatglm.cn/files/9dc31110-df90-47fa-a0d0-ad68c71980e0_logo-sekolah.png?auth_key=1790264408-30aa5e18b0434ad89b1e65954f66c69d-0-eb89bff8ae3eb018d606234bb320a228" alt="Logo SMA Negeri 20" class="w-12 h-12 rounded-full">
+                        <h2 class="text-2xl font-bold text-gray-800">Dashboard Admin</h2>
+                    </div>
+                    <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors flex items-center space-x-2">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
                     </button>
                 </div>
                 
                 <div class="grid md:grid-cols-2 gap-8">
                     <!-- Add Voter -->
                     <div class="bg-gray-50 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Tambah Pemilih</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+                            <i class="fas fa-user-plus text-blue-600"></i>
+                            <span>Tambah Pemilih</span>
+                        </h3>
                         <form id="addVoterForm" class="space-y-4">
-                            <input type="text" id="voterName" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Nama Lengkap" required>
-                            <input type="text" id="voterNisn" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="NISN" required>
-                            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                                Tambah Pemilih
+                            <div class="relative">
+                                <input type="text" id="voterName" class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg" placeholder="Nama Lengkap" required>
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="fas fa-user text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <input type="text" id="voterNisn" class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg" placeholder="NISN" required>
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="fas fa-id-card text-gray-400"></i>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fas fa-plus"></i>
+                                <span>Tambah Pemilih</span>
                             </button>
                         </form>
                         
                         <div class="mt-4 pt-4 border-t border-gray-300">
-                            <h4 class="text-sm font-medium text-gray-700 mb-3">Import Data Siswa</h4>
+                            <h4 class="text-sm font-medium text-gray-700 mb-3 flex items-center space-x-2">
+                                <i class="fas fa-file-import text-green-600"></i>
+                                <span>Import Data Siswa</span>
+                            </h4>
                             <input type="file" id="importFile" accept=".csv,.txt" class="hidden">
                             <button id="importBtn" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2">
-                                <span>📁</span>
+                                <i class="fas fa-file-csv"></i>
                                 <span>Import dari File CSV</span>
                             </button>
                             <p class="text-xs text-gray-500 mt-2">Format: Nama,NISN (satu baris per siswa)</p>
@@ -119,30 +356,70 @@
 
                     <!-- Add Candidate -->
                     <div class="bg-gray-50 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Tambah Kandidat</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+                            <i class="fas fa-user-tie text-green-600"></i>
+                            <span>Tambah Kandidat</span>
+                        </h3>
                         <form id="addCandidateForm" class="space-y-4">
-                            <input type="text" id="candidateName" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Nama Kandidat" required>
-                            <input type="text" id="candidateClass" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Kelas" required>
+                            <div class="relative">
+                                <input type="text" id="candidateName" class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg" placeholder="Nama Kandidat" required>
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="fas fa-user text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <input type="text" id="candidateClass" class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg" placeholder="Kelas" required>
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="fas fa-school text-gray-400"></i>
+                                </div>
+                            </div>
                             <textarea id="candidateVision" class="w-full px-4 py-2 border border-gray-300 rounded-lg" rows="3" placeholder="Visi & Misi" required></textarea>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Foto Kandidat</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center space-x-2">
+                                    <i class="fas fa-image text-purple-600"></i>
+                                    <span>Foto Kandidat</span>
+                                </label>
                                 <input type="file" id="candidatePhoto" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
                                 <div id="photoPreview" class="mt-2 hidden">
                                     <img id="previewImg" class="w-20 h-20 object-cover rounded-lg border-2 border-gray-300">
                                 </div>
                             </div>
                             
-                            <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
-                                Tambah Kandidat
+                            <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fas fa-plus"></i>
+                                <span>Tambah Kandidat</span>
                             </button>
                         </form>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-300">
+                            <h4 class="text-sm font-medium text-gray-700 mb-3 flex items-center space-x-2">
+                                <i class="fas fa-file-archive text-orange-600"></i>
+                                <span>Import Data Kandidat</span>
+                            </h4>
+                            <input type="file" id="importCandidateFile" accept=".zip" class="hidden">
+                            <button id="importCandidateBtn" class="w-full bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fas fa-file-archive"></i>
+                                <span>Import Kandidat (ZIP)</span>
+                            </button>
+                            <p class="text-xs text-gray-500 mt-2">Upload file ZIP berisi: data.csv (Nama,Kelas,Visi) + foto kandidat</p>
+                            
+                            <div class="mt-3">
+                                <button id="downloadTemplateBtn" class="w-full bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center space-x-2">
+                                    <i class="fas fa-download"></i>
+                                    <span>Download Template CSV</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Voters List -->
                 <div class="mt-8">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Daftar Pemilih</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+                        <i class="fas fa-list text-purple-600"></i>
+                        <span>Daftar Pemilih</span>
+                    </h3>
                     <div class="bg-gray-50 rounded-xl p-4 max-h-60 overflow-y-auto">
                         <div id="votersList" class="space-y-2"></div>
                     </div>
@@ -152,15 +429,17 @@
 
         <!-- Voting Section -->
         <div id="votingSection" class="hidden animate-fade-in">
-            <div class="bg-white rounded-2xl card-shadow p-8">
+            <div class="bg-white/90 backdrop-blur-sm rounded-2xl card-shadow p-8">
                 <div class="text-center mb-8">
+                    <img src="https://z-cdn-media.chatglm.cn/files/9dc31110-df90-47fa-a0d0-ad68c71980e0_logo-sekolah.png?auth_key=1790264408-30aa5e18b0434ad89b1e65954f66c69d-0-eb89bff8ae3eb018d606234bb320a228" alt="Logo SMA Negeri 20" class="w-24 h-24 mx-auto mb-4 school-logo">
                     <h2 class="text-2xl font-bold text-gray-800 mb-2">Pilih Kandidat Ketua OSIS</h2>
                     <p class="text-gray-600">Pilih salah satu kandidat di bawah ini</p>
                 </div>
                 <div id="candidatesList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
                 <div class="text-center">
-                    <button id="backToLogin" class="text-purple-600 hover:text-purple-800 font-medium">
-                        ← Kembali ke Login
+                    <button id="backToLogin" class="text-purple-600 hover:text-purple-800 font-medium flex items-center justify-center space-x-1 mx-auto">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Kembali ke Login</span>
                     </button>
                 </div>
             </div>
@@ -168,15 +447,17 @@
 
         <!-- Results Section -->
         <div id="resultsSection" class="hidden animate-fade-in">
-            <div class="bg-white rounded-2xl card-shadow p-8">
+            <div class="bg-white/90 backdrop-blur-sm rounded-2xl card-shadow p-8">
                 <div class="text-center mb-8">
+                    <img src="https://z-cdn-media.chatglm.cn/files/9dc31110-df90-47fa-a0d0-ad68c71980e0_logo-sekolah.png?auth_key=1790264408-30aa5e18b0434ad89b1e65954f66c69d-0-eb89bff8ae3eb018d606234bb320a228" alt="Logo SMA Negeri 20" class="w-24 h-24 mx-auto mb-4 school-logo">
                     <h2 class="text-2xl font-bold text-gray-800 mb-2">Hasil Pemilihan</h2>
                     <p class="text-gray-600">Real-time hasil voting ketua OSIS</p>
                 </div>
                 <div id="resultsChart" class="mb-8"></div>
                 <div class="text-center">
-                    <button id="backToLoginFromResults" class="text-purple-600 hover:text-purple-800 font-medium">
-                        ← Kembali ke Login
+                    <button id="backToLoginFromResults" class="text-purple-600 hover:text-purple-800 font-medium flex items-center justify-center space-x-1 mx-auto">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Kembali ke Login</span>
                     </button>
                 </div>
             </div>
@@ -233,8 +514,14 @@
         // Show message function
         function showMessage(message, type = 'success') {
             const messageDiv = document.createElement('div');
-            messageDiv.className = `p-4 rounded-lg text-white font-medium animate-fade-in ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
-            messageDiv.textContent = message;
+            const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            
+            messageDiv.className = `p-4 rounded-lg text-white font-medium notification flex items-center space-x-2 ${bgColor}`;
+            messageDiv.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+            `;
             document.getElementById('messageContainer').appendChild(messageDiv);
             setTimeout(() => messageDiv.remove(), 3000);
         }
@@ -291,7 +578,7 @@
             showMessage('Pemilih berhasil ditambahkan!');
         });
 
-        // Import File Handler
+        // Import File Handler for Voters
         document.getElementById('importBtn').addEventListener('click', () => {
             document.getElementById('importFile').click();
         });
@@ -324,6 +611,92 @@
                 showMessage(`Import berhasil! ${imported} siswa ditambahkan, ${skipped} dilewati (sudah ada)`);
             };
             reader.readAsText(file);
+        });
+
+        // Import Candidate Handler
+        document.getElementById('importCandidateBtn').addEventListener('click', () => {
+            document.getElementById('importCandidateFile').click();
+        });
+
+        document.getElementById('importCandidateFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (!file.name.endsWith('.zip')) {
+                showMessage('File harus berformat ZIP!', 'error');
+                return;
+            }
+
+            try {
+                const zip = new JSZip();
+                const zipContent = await zip.loadAsync(file);
+                
+                // Look for data.csv file
+                const csvFile = zipContent.file('data.csv');
+                if (!csvFile) {
+                    showMessage('File data.csv tidak ditemukan dalam ZIP!', 'error');
+                    return;
+                }
+
+                const csvText = await csvFile.async('text');
+                const lines = csvText.split('\n').filter(line => line.trim());
+                let imported = 0;
+
+                for (const line of lines) {
+                    const [name, candidateClass, vision, photoFileName] = line.split(',').map(item => item.trim());
+                    
+                    if (name && candidateClass && vision) {
+                        let photoData = "👤"; // Default emoji
+                        
+                        // Try to find photo file
+                        if (photoFileName) {
+                            const photoFile = zipContent.file(photoFileName);
+                            if (photoFile) {
+                                try {
+                                    const photoBlob = await photoFile.async('blob');
+                                    photoData = await new Promise((resolve) => {
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => resolve(e.target.result);
+                                        reader.readAsDataURL(photoBlob);
+                                    });
+                                } catch (error) {
+                                    console.log(`Could not load photo: ${photoFileName}`);
+                                }
+                            }
+                        }
+
+                        const newCandidate = {
+                            id: Date.now() + imported,
+                            name,
+                            class: candidateClass,
+                            vision,
+                            photo: photoData
+                        };
+
+                        candidates.push(newCandidate);
+                        imported++;
+                    }
+                }
+
+                localStorage.setItem('candidates', JSON.stringify(candidates));
+                showMessage(`Import kandidat berhasil! ${imported} kandidat ditambahkan`);
+                
+            } catch (error) {
+                showMessage('Error membaca file ZIP. Pastikan format file benar!', 'error');
+            }
+        });
+
+        // Download Template CSV
+        document.getElementById('downloadTemplateBtn').addEventListener('click', () => {
+            const csvContent = 'Nama,Kelas,Visi,NamaFoto\nContoh Kandidat 1,XII IPA 1,Memajukan sekolah dengan inovasi teknologi,foto1.jpg\nContoh Kandidat 2,XII IPS 2,Meningkatkan prestasi akademik dan non-akademik,foto2.jpg';
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'template_kandidat.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+            showMessage('Template CSV berhasil didownload!');
         });
 
         // Photo Preview Handler
@@ -410,7 +783,7 @@
             
             candidates.forEach(candidate => {
                 const candidateCard = document.createElement('div');
-                candidateCard.className = 'bg-gray-50 rounded-xl p-6 text-center hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-purple-300';
+                candidateCard.className = 'bg-white rounded-xl p-6 text-center candidate-card card-shadow border-2 border-transparent hover:border-purple-300';
                 
                 const photoDisplay = candidate.photo.startsWith('data:') 
                     ? `<img src="${candidate.photo}" class="w-24 h-24 object-cover rounded-full mx-auto mb-4 border-4 border-purple-200">`
@@ -421,8 +794,9 @@
                     <h3 class="text-xl font-bold text-gray-800 mb-2">${candidate.name}</h3>
                     <p class="text-purple-600 font-medium mb-3">${candidate.class}</p>
                     <p class="text-gray-600 text-sm mb-4">${candidate.vision}</p>
-                    <button class="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white py-2 rounded-lg font-semibold hover:from-purple-600 hover:to-blue-600 transition-all duration-300" onclick="vote(${candidate.id})">
-                        Pilih Kandidat
+                    <button class="w-full btn-primary text-white py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-blue-600 transition-all duration-300 vote-btn flex items-center justify-center space-x-2" onclick="vote(${candidate.id})">
+                        <i class="fas fa-vote-yea"></i>
+                        <span>Pilih Kandidat</span>
                     </button>
                 `;
                 candidatesList.appendChild(candidateCard);
@@ -477,7 +851,7 @@
                     : `<span class="text-2xl">${candidate.photo}</span>`;
                 
                 const resultItem = document.createElement('div');
-                resultItem.className = 'mb-6';
+                resultItem.className = 'mb-6 bg-white p-4 rounded-xl card-shadow';
                 resultItem.innerHTML = `
                     <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center space-x-3">
@@ -493,14 +867,14 @@
                         </div>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-4">
-                        <div class="bg-gradient-to-r from-purple-500 to-blue-500 h-4 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                        <div class="bg-gradient-to-r from-purple-500 to-blue-500 h-4 rounded-full progress-bar" style="width: ${percentage}%"></div>
                     </div>
                 `;
                 resultsChart.appendChild(resultItem);
             });
             
             if (totalVotes === 0) {
-                resultsChart.innerHTML = '<p class="text-center text-gray-500 text-lg">Belum ada suara masuk</p>';
+                resultsChart.innerHTML = '<div class="text-center py-8"><p class="text-gray-500 text-lg">Belum ada suara masuk</p></div>';
             }
         }
 
@@ -529,13 +903,14 @@
                         <p class="font-medium text-gray-800">${voter.name}</p>
                         <p class="text-sm text-gray-600">NISN: ${voter.nisn}</p>
                     </div>
-                    <span class="text-sm ${votedNisns.includes(voter.nisn) ? 'text-green-600 font-medium' : 'text-gray-400'}">
-                        ${votedNisns.includes(voter.nisn) ? '✓ Sudah Vote' : 'Belum Vote'}
+                    <span class="text-sm ${votedNisns.includes(voter.nisn) ? 'text-green-600 font-medium' : 'text-gray-400'} flex items-center space-x-1">
+                        <i class="fas ${votedNisns.includes(voter.nisn) ? 'fa-check-circle' : 'fa-clock'}"></i>
+                        <span>${votedNisns.includes(voter.nisn) ? 'Sudah Vote' : 'Belum Vote'}</span>
                     </span>
                 `;
                 votersList.appendChild(voterItem);
             });
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9843423975ba4038',t:'MTc1ODcyNzE1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
