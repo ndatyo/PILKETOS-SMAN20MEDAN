@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemilihan Ketua OSIS 2024</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            color: white;
+            animation: fadeInDown 1s ease;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .voting-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+            animation: fadeIn 1.5s ease;
+        }
+
+        .candidate-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .candidate-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .candidate-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .candidate-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid white;
+            margin: 0 auto 15px;
+            display: block;
+            object-fit: cover;
+        }
+
+        .candidate-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .candidate-class {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .candidate-content {
+            padding: 25px;
+        }
+
+        .vision-mission {
+            margin-bottom: 20px;
+        }
+
+        .vision-mission h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vision-mission ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+
+        .vision-mission li {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+
+        .vision-mission li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .vote-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .vote-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .vote-btn:active {
+            transform: scale(0.98);
+        }
+
+        .results-section {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideIn 0.8s ease;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .results-header h2 {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .winner-announcement {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 40px;
+            animation: pulse 2s infinite;
+        }
+
+        .winner-announcement h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .winner-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .winner-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+        }
+
+        .winner-details h4 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .vote-count {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .results-chart {
+            margin-top: 40px;
+        }
+
+        .chart-item {
+            margin-bottom: 25px;
+        }
+
+        .chart-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .chart-bar {
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: white;
+            font-weight: 600;
+            transition: width 1.5s ease;
+            position: relative;
+        }
+
+        .chart-fill::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .reset-btn {
+            display: block;
+            margin: 40px auto 0;
+            padding: 15px 40px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            position: absolute;
+            animation: confetti-fall 3s linear;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .voting-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-header h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-vote-yea"></i> Pemilihan Ketua OSIS 2024</h1>
+            <p>Pilih pemimpin terbaik untuk masa depan OSIS kita!</p>
+        </header>
+
+        <section class="voting-section" id="votingSection">
+            <!-- Kandidat 1 -->
+            <div class="candidate-card">
+                <div class="candidate-header">
+                    <img src="https://picsum.photos/seed/candidate1/200/200.jpg" alt="Foto Kandidat" class="candidate-photo">
+                    <h2 class="candidate-name">Ahmad Rizki</h2>
+                    <p class="candidate-class">XI IPA 1</p>
+                </div>
+                <div class="candidate-content">
+                    <div class="vision-mission">
+                        <h3><i class="fas fa-lightbulb"></i> Visi & Misi</h3>
+                        <ul>
+                            <li>Mewujudkan OSIS yang inovatif dan kreatif</li>
+                            <li>Meningkatkan prestasi akademik dan non-akademik</li>
+                            <li>Memperkuat solidaritas antar siswa</li>
+                            <li>Mengadakan program pengembangan bakat</li>
+                        </ul>
+                    </div>
+                    <button class="vote-btn" onclick="vote(0)">
+                        <i class="fas fa-check-circle"></i> Pilih Ahmad Rizki
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kandidat 2 -->
+            <div class="candidate-card">
+                <div class="candidate-header">
+                    <img src="https://picsum.photos/seed/candidate2/200/200.jpg" alt="Foto Kandidat" class="candidate-photo">
+                    <h2 class="candidate-name">Siti Nurhaliza</h2>
+                    <p class="candidate-class">XI IPS 2</p>
+                </div>
+                <div class="candidate-content">
+                    <div class="vision-mission">
+                        <h3><i class="fas fa-lightbulb"></i> Visi & Misi</h3>
+                        <ul>
+                            <li>OSIS sebagai wadah aspirasi siswa</li>
+                            <li>Peningkatan kualitas kegiatan ekstrakurikuler</li>
+                            <li>Program peduli lingkungan sekolah</li>
+                            <li>Kolaborasi dengan OSIS sekolah lain</li>
+                        </ul>
+                    </div>
+                    <button class="vote-btn" onclick="vote(1)">
+                        <i class="fas fa-check-circle"></i> Pilih Siti Nurhaliza
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kandidat 3 -->
+            <div class="candidate-card">
+                <div class="candidate-header">
+                    <img src="https://picsum.photos/seed/candidate3/200/200.jpg" alt="Foto Kandidat" class="candidate-photo">
+                    <h2 class="candidate-name">Budi Santoso</h2>
+                    <p class="candidate-class">XII Bahasa</p>
+                </div>
+                <div class="candidate-content">
+                    <div class="vision-mission">
+                        <h3><i class="fas fa-lightbulb"></i> Visi & Misi</h3>
+                        <ul>
+                            <li>Transformasi digital OSIS</li>
+                            <li>Pengembangan soft skill siswa</li>
+                            <li>Program beasiswa untuk siswa berprestasi</li>
+                            <li>Meningkatkan kualitas event sekolah</li>
+                        </ul>
+                    </div>
+                    <button class="vote-btn" onclick="vote(2)">
+                        <i class="fas fa-check-circle"></i> Pilih Budi Santoso
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="results-section" id="resultsSection">
+            <div class="results-header">
+                <h2><i class="fas fa-trophy"></i> Hasil Pemilihan Ketua OSIS</h2>
+                <p>Terima kasih atas partisipasi Anda dalam pemilihan ini!</p>
+            </div>
+
+            <div class="winner-announcement" id="winnerAnnouncement">
+                <!-- Konten pemenang akan diisi oleh JavaScript -->
+            </div>
+
+            <div class="results-chart" id="resultsChart">
+                <!-- Grafik hasil akan diisi oleh JavaScript -->
+            </div>
+
+            <button class="reset-btn" onclick="resetVoting()">
+                <i class="fas fa-redo"></i> Mulai Pemilihan Baru
+            </button>
+        </section>
+    </div>
+
+    <script>
+        const candidates = [
+            {
+                name: "Ahmad Rizki",
+                class: "XI IPA 1",
+                photo: "https://picsum.photos/seed/candidate1/200/200.jpg",
+                votes: 0
+            },
+            {
+                name: "Siti Nurhaliza",
+                class: "XI IPS 2",
+                photo: "https://picsum.photos/seed/candidate2/200/200.jpg",
+                votes: 0
+            },
+            {
+                name: "Budi Santoso",
+                class: "XII Bahasa",
+                photo: "https://picsum.photos/seed/candidate3/200/200.jpg",
+                votes: 0
+            }
+        ];
+
+        let hasVoted = false;
+
+        function vote(candidateIndex) {
+            if (hasVoted) {
+                showNotification("Anda sudah melakukan voting!");
+                return;
+            }
+
+            candidates[candidateIndex].votes++;
+            hasVoted = true;
+            
+            // Simpan ke localStorage
+            localStorage.setItem('osisVotes', JSON.stringify(candidates));
+            localStorage.setItem('hasVoted', 'true');
+            
+            showResults();
+            createConfetti();
+        }
+
+        function showResults() {
+            document.getElementById('votingSection').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            // Tentukan pemenang
+            const winner = candidates.reduce((prev, current) => 
+                (prev.votes > current.votes) ? prev : current
+            );
+            
+            // Tampilkan pengumuman pemenang
+            const winnerAnnouncement = document.getElementById('winnerAnnouncement');
+            winnerAnnouncement.innerHTML = `
+                <h3><i class="fas fa-crown"></i> Selamat kepada Pemenang!</h3>
+                <div class="winner-info">
+                    <img src="${winner.photo}" alt="${winner.name}" class="winner-photo">
+                    <div class="winner-details">
+                        <h4>${winner.name}</h4>
+                        <p class="vote-count">${winner.votes} Suara</p>
+                    </div>
+                </div>
+            `;
+            
+            // Tampilkan grafik hasil
+            const totalVotes = candidates.reduce((sum, candidate) => sum + candidate.votes, 0);
+            const resultsChart = document.getElementById('resultsChart');
+            
+            resultsChart.innerHTML = candidates.map(candidate => {
+                const percentage = totalVotes > 0 ? (candidate.votes / totalVotes * 100).toFixed(1) : 0;
+                return `
+                    <div class="chart-item">
+                        <div class="chart-label">
+                            <span>${candidate.name}</span>
+                            <span>${candidate.votes} suara (${percentage}%)</span>
+                        </div>
+                        <div class="chart-bar">
+                            <div class="chart-fill" style="width: 0%" data-width="${percentage}%">
+                                ${percentage}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Animasi grafik
+            setTimeout(() => {
+                document.querySelectorAll('.chart-fill').forEach(bar => {
+                    bar.style.width = bar.getAttribute('data-width');
+                });
+            }, 100);
+        }
+
+        function resetVoting() {
+            if (confirm('Apakah Anda yakin ingin memulai pemilihan baru? Semua data voting akan dihapus.')) {
+                localStorage.removeItem('osisVotes');
+                localStorage.removeItem('hasVoted');
+                location.reload();
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b', '#6c5ce7'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }, i * 50);
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ff6b6b;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: slideIn 0.5s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.5s ease';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        // Cek apakah sudah ada data voting
+        window.onload = function() {
+            const savedVotes = localStorage.getItem('osisVotes');
+            const votedStatus = localStorage.getItem('hasVoted');
+            
+            if (savedVotes) {
+                const parsedVotes = JSON.parse(savedVotes);
+                candidates.forEach((candidate, index) => {
+                    candidate.votes = parsedVotes[index].votes;
+                });
+            }
+            
+            if (votedStatus === 'true') {
+                hasVoted = true;
+                showResults();
+            }
+        };
+    </script>
+</body>
+</html>
