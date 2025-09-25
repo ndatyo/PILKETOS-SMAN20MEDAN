@@ -265,6 +265,48 @@
             pointer-events: none;
             opacity: 0.7;
         }
+        
+        /* Class group styling */
+        .class-group {
+            margin-bottom: 16px;
+        }
+        
+        .class-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .class-content {
+            background: white;
+            border-radius: 6px;
+            padding: 8px;
+        }
+        
+        /* Accordion styling */
+        .accordion {
+            transition: max-height 0.3s ease-out;
+            overflow: hidden;
+        }
+        
+        .accordion.collapsed {
+            max-height: 50px;
+        }
+        
+        .accordion.expanded {
+            max-height: 1000px;
+        }
+        
+        .accordion-toggle {
+            cursor: pointer;
+            user-select: none;
+        }
     </style>
 </head>
 <body class="animated-bg min-h-screen">
@@ -464,6 +506,12 @@
                                         <i class="fas fa-id-card text-gray-400"></i>
                                     </div>
                                 </div>
+                                <div class="relative">
+                                    <input type="text" id="voterClass" class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg" placeholder="Kelas (contoh: X IPA 1)" required>
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <i class="fas fa-school text-gray-400"></i>
+                                    </div>
+                                </div>
                                 <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
                                     <i class="fas fa-plus"></i>
                                     <span>Tambah Pemilih</span>
@@ -480,7 +528,7 @@
                                     <i class="fas fa-file-csv"></i>
                                     <span>Import dari File CSV</span>
                                 </button>
-                                <p class="text-xs text-gray-500 mt-2">Format: Nama,NISN (satu baris per siswa)</p>
+                                <p class="text-xs text-gray-500 mt-2">Format: Nama,NISN,Kelas (satu baris per siswa)</p>
                             </div>
                         </div>
 
@@ -677,9 +725,12 @@
 
         if (voters.length === 0) {
             voters = [
-                { name: "Budi Santoso", nisn: "1234567890" },
-                { name: "Ani Wijaya", nisn: "0987654321" },
-                { name: "Dedi Kurniawan", nisn: "1122334455" }
+                { name: "Budi Santoso", nisn: "1234567890", class: "X IPA 1" },
+                { name: "Ani Wijaya", nisn: "0987654321", class: "X IPS 1" },
+                { name: "Dedi Kurniawan", nisn: "1122334455", class: "XI IPA 2" },
+                { name: "Eko Prasetyo", nisn: "5544332211", class: "XI IPA 1" },
+                { name: "Fitri Handayani", nisn: "6677889900", class: "X IPA 2" },
+                { name: "Gunawan Wijaya", nisn: "9988776655", class: "X IPS 2" }
             ];
             localStorage.setItem('voters', JSON.stringify(voters));
         }
@@ -854,13 +905,14 @@
             e.preventDefault();
             const name = document.getElementById('voterName').value;
             const nisn = document.getElementById('voterNisn').value;
+            const voterClass = document.getElementById('voterClass').value;
             
             if (voters.find(v => v.nisn === nisn)) {
                 showMessage('NISN sudah terdaftar!', 'error');
                 return;
             }
             
-            voters.push({ name, nisn });
+            voters.push({ name, nisn, class: voterClass });
             localStorage.setItem('voters', JSON.stringify(voters));
             updateVotersList();
             updateDashboardStats();
@@ -902,10 +954,10 @@
                 let skipped = 0;
 
                 lines.forEach(line => {
-                    const [name, nisn] = line.split(',').map(item => item.trim());
-                    if (name && nisn) {
+                    const [name, nisn, voterClass] = line.split(',').map(item => item.trim());
+                    if (name && nisn && voterClass) {
                         if (!voters.find(v => v.nisn === nisn)) {
-                            voters.push({ name, nisn });
+                            voters.push({ name, nisn, class: voterClass });
                             imported++;
                         } else {
                             skipped++;
@@ -921,32 +973,82 @@
             reader.readAsText(file);
         });
 
-        // Update Voters List
+        // Update Voters List - Grouped by Class
         function updateVotersList() {
             const votersList = document.getElementById('votersList');
             const votersCount = document.getElementById('votersCount');
             votersList.innerHTML = '';
             votersCount.textContent = `${voters.length} pemilih`;
             
+            // Group voters by class
+            const votersByClass = {};
             voters.forEach(voter => {
-                const voterItem = document.createElement('div');
-                voterItem.className = 'flex justify-between items-center bg-white p-3 rounded-lg border border-gray-200';
-                voterItem.innerHTML = `
-                    <div>
-                        <p class="font-medium text-gray-800">${voter.name}</p>
-                        <p class="text-sm text-gray-600">NISN: ${voter.nisn}</p>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-sm ${votedNisns.includes(voter.nisn) ? 'text-green-600 font-medium' : 'text-gray-400'} flex items-center space-x-1">
-                            <i class="fas ${votedNisns.includes(voter.nisn) ? 'fa-check-circle' : 'fa-clock'}"></i>
-                            <span>${votedNisns.includes(voter.nisn) ? 'Sudah Vote' : 'Belum Vote'}</span>
-                        </span>
-                        <button onclick="deleteVoter('${voter.nisn}')" class="text-red-500 hover:text-red-700 delete-btn">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
+                if (!votersByClass[voter.class]) {
+                    votersByClass[voter.class] = [];
+                }
+                votersByClass[voter.class].push(voter);
+            });
+            
+            // Sort classes
+            const sortedClasses = Object.keys(votersByClass).sort();
+            
+            // Create accordion for each class
+            sortedClasses.forEach((className, index) => {
+                const classVoters = votersByClass[className];
+                const classGroup = document.createElement('div');
+                classGroup.className = 'class-group';
+                
+                const classHeader = document.createElement('div');
+                classHeader.className = 'class-header accordion-toggle';
+                classHeader.innerHTML = `
+                    <span>${className}</span>
+                    <span class="text-sm">${classVoters.length} pemilih</span>
                 `;
-                votersList.appendChild(voterItem);
+                
+                const classContent = document.createElement('div');
+                classContent.className = 'class-content accordion collapsed';
+                
+                classVoters.forEach(voter => {
+                    const voterItem = document.createElement('div');
+                    voterItem.className = 'flex justify-between items-center p-2 border-b border-gray-100 last:border-0';
+                    voterItem.innerHTML = `
+                        <div>
+                            <p class="font-medium text-gray-800">${voter.name}</p>
+                            <p class="text-sm text-gray-600">NISN: ${voter.nisn}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm ${votedNisns.includes(voter.nisn) ? 'text-green-600 font-medium' : 'text-gray-400'} flex items-center space-x-1">
+                                <i class="fas ${votedNisns.includes(voter.nisn) ? 'fa-check-circle' : 'fa-clock'}"></i>
+                                <span>${votedNisns.includes(voter.nisn) ? 'Sudah Vote' : 'Belum Vote'}</span>
+                            </span>
+                            <button onclick="deleteVoter('${voter.nisn}')" class="text-red-500 hover:text-red-700 delete-btn">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    `;
+                    classContent.appendChild(voterItem);
+                });
+                
+                // Add accordion toggle functionality
+                classHeader.addEventListener('click', () => {
+                    if (classContent.classList.contains('collapsed')) {
+                        classContent.classList.remove('collapsed');
+                        classContent.classList.add('expanded');
+                    } else {
+                        classContent.classList.remove('expanded');
+                        classContent.classList.add('collapsed');
+                    }
+                });
+                
+                classGroup.appendChild(classHeader);
+                classGroup.appendChild(classContent);
+                votersList.appendChild(classGroup);
+                
+                // Expand first class by default
+                if (index === 0) {
+                    classContent.classList.remove('collapsed');
+                    classContent.classList.add('expanded');
+                }
             });
         }
 
