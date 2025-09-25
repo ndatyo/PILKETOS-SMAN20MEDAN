@@ -113,23 +113,25 @@
             transition: width 1.5s ease-in-out;
         }
         
-        /* Custom scrollbar */
+        /* Custom scrollbar - Lebih jelas dan lebih besar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 12px;
         }
         
         ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            margin: 4px;
         }
         
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 6px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.7);
         }
         
         /* Candidate card hover effect */
@@ -223,6 +225,45 @@
         /* Confirmation modal */
         .confirm-modal {
             backdrop-filter: blur(5px);
+        }
+        
+        /* Scrollable container styling */
+        .scrollable-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+        
+        .scrollable-container::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        .scrollable-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+        
+        .scrollable-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 5px;
+        }
+        
+        .scrollable-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0.7;
         }
     </style>
 </head>
@@ -444,7 +485,7 @@
                         </div>
 
                         <!-- Voters List -->
-                        <div class="bg-gray-50 rounded-xl p-6">
+                        <div class="bg-gray-50 rounded-xl p-6 relative">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-semibold text-gray-800 flex items-center space-x-2">
                                     <i class="fas fa-list text-purple-600"></i>
@@ -452,8 +493,11 @@
                                 </h3>
                                 <span class="text-sm text-gray-600" id="votersCount">0 pemilih</span>
                             </div>
-                            <div class="bg-white rounded-lg p-4 max-h-96 overflow-y-auto">
+                            <div class="bg-white rounded-lg p-4 scrollable-container relative">
                                 <div id="votersList" class="space-y-2"></div>
+                                <div class="scroll-indicator">
+                                    <i class="fas fa-arrows-alt-v"></i> Scroll
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -522,7 +566,7 @@
                         </div>
 
                         <!-- Candidates List -->
-                        <div class="bg-gray-50 rounded-xl p-6">
+                        <div class="bg-gray-50 rounded-xl p-6 relative">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-semibold text-gray-800 flex items-center space-x-2">
                                     <i class="fas fa-list text-purple-600"></i>
@@ -530,8 +574,11 @@
                                 </h3>
                                 <span class="text-sm text-gray-600" id="candidatesCount">0 kandidat</span>
                             </div>
-                            <div class="bg-white rounded-lg p-4 max-h-96 overflow-y-auto">
+                            <div class="bg-white rounded-lg p-4 scrollable-container relative">
                                 <div id="candidatesList" class="space-y-4"></div>
+                                <div class="scroll-indicator">
+                                    <i class="fas fa-arrows-alt-v"></i> Scroll
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -758,6 +805,7 @@
                     localStorage.setItem('votedNisns', JSON.stringify(votedNisns));
                     updateDashboardStats();
                     updateAdminResultsChart();
+                    updateVotersList();
                     showMessage('Data voting berhasil direset!');
                 }
             );
